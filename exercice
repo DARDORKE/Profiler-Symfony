@@ -28,3 +28,7 @@ class BlogPost
 }
 
 Indiquez les contraintes induites par les annotations définies.
+
+Le titre doit comporter 15 caractères minimum.
+Le slug ne peut pas être null.
+Abstract doit comporter 2000 caractères au maximum et ne peux pas être null.
