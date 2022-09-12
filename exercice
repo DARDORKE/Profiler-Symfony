@@ -1,24 +1,30 @@
-Dans le cadre de cet exercice, vous allez :
+Vous disposez de la classe suivante, qui permet de matérialiser un article de blog :
 
-Créer une entité Message contenant les attributs suivants :
-name (string 255 non null), email (string 255 non null), subject (string 255 non null), content (text non null)
+<?php
 
-Créer le formulaire associé sans vous soucier des contraintes de validation
+namespace App\Entity;
 
-Intégrer le formulaire dans le contrôleur en persistant l'entité à la soumission
+use Symfony\Component\Validator\Constraints as Assert;
 
-L'afficher dans le template Twig
+class BlogPost
+{
+    /**
+     * @Assert\Length(min=15)
+     */
+    private $title;
 
-Vous devriez obtenir ceci :
+    /**
+     * @Assert\NotBlank
+     */
+    private $slug;
 
+    /**
+     * @Assert\NotBlank
+     * @Assert\Length(max=2000)
+     */
+    private $abstract;
 
-Maintenant, soumettez le formulaire sans information. Oups ! Vous devriez avoir une exception !
+    // Getters, setters...
+}
 
-
-Vous vous doutez bien du problème. Mais, avant de foncer le résoudre, prenez un peu de temps pour
-parcourir les différents onglets du Profiler (Request, Validator, Forms, Logs, Doctrine, par exemple).
-
-Corrigez le problème en ajoutant des contraintes de validation dans votre entité afin de rendre les
-champs obligatoires, puis soumettez de nouveau votre formulaire. Les erreurs devraient correctement
-s'afficher, mais prenez le temps encore une fois d'aller voir comment les informations du Profiler
-ont évolué (onglets Validator et Forms).
+Indiquez les contraintes induites par les annotations définies.
