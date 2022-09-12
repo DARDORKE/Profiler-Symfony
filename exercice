@@ -24,11 +24,19 @@ class BlogPost
      */
     private $abstract;
 
-    // Getters, setters...
+    private $author;
+
+    private $content;
+
+    private $category;
 }
 
-Indiquez les contraintes induites par les annotations définies.
+Ajoutez les contraintes suivantes à ces propriétés :
 
-Le titre doit comporter 15 caractères minimum.
-Le slug ne peut pas être null.
-Abstract doit comporter 2000 caractères au maximum et ne peux pas être null.
+Les propriétés author / category ne peuvent être nulles
+
+La propriété author doit être au format e-mail html5
+
+La propriété category doit faire partie de la liste suivante : PHP / HTML / JS au moyen d'une constante
+
+La propriété content doit faire au moins 100 caractères, au plus 10 000
