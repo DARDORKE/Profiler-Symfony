@@ -1,0 +1,27 @@
+Depuis le contrôleur suivant :
+
+Injectez puis dumpez le contenu de l'objet Symfony\Component\HttpFoundation\Request
+
+Trouvez la valeur symfony.localhost dans les en-têtes de la requête que vous venez de dumper
+
+Affichez-la en utilisant la fonction dd()
+
+<?php // src/Controller/DefaultController.php
+
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
+
+class DefaultController extends AbstractController
+{
+    /**
+     * @Route("/", name="default")
+     */
+    public function index()
+    {
+        return $this->render('default/index.html.twig', [
+            'controller_name' => 'DefaultController',
+        ]);
+    }
+}
