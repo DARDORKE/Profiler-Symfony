@@ -12,13 +12,7 @@ class DefaultController extends AbstractController
     #[Route('/', name: 'app_default')]
     public function index(Request $request): Response
     {
-        dump($request);
-
-        dump($request->headers->all());
-
-        dd($request->headers->get('host'));
-
-        return $this->render('default/index.html.twig', [
+        return dump($this)->render('default/index.html.twig', [
             'controller_name' => 'DefaultController',
         ]);
     }

@@ -1,27 +1,11 @@
-Depuis le contrôleur suivant :
+Après avoir installé le pack Debug :
 
-Injectez puis dumpez le contenu de l'objet Symfony\Component\HttpFoundation\Request
+Injectez le service Logger dans le contrôleur DefaultController::index()
 
-Trouvez la valeur symfony.localhost dans les en-têtes de la requête que vous venez de dumper
+Loggez le message This is my log message. en type info
 
-Affichez-la en utilisant la fonction dd()
+Déterminez le canal utilisé pour logger le message en vous aidant du Profiler
 
-<?php // src/Controller/DefaultController.php
+Dumpez l'objet Request dans la barre de debug depuis un template Twig (sans passer par le contrôleur)
 
-namespace App\Controller;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-
-class DefaultController extends AbstractController
-{
-    /**
-     * @Route("/", name="default")
-     */
-    public function index()
-    {
-        return $this->render('default/index.html.twig', [
-            'controller_name' => 'DefaultController',
-        ]);
-    }
-}
+Pour le point 4, l'appel de dump sans paramètre vous permet d'afficher toutes les variables de votre template.
