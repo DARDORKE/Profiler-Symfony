@@ -1,29 +1,304 @@
-Vous disposez du formulaire suivant, permettant d'effectuer une transaction :
+Pour la mise en place d'un outil de gestion de projet, vous devez établir une page permettant de
+créer des stories, c'est-à-dire des tâches.
+
+Une tâche est matérialisée par un titre, une description, un auteur, l'adresse e-mail d'un
+référent si nécessaire, ainsi que d'une propriété Story point.
+
+Cette propriété sert à estimer la complexité d'une tâche et sera exprimée ici au moyen
+des 9 premières valeurs (distinctes) de la suite de Fibonacci.
+
+Vous disposez du code suivant :
+
+<?php
+
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity(repositoryClass="App\Repository\StoryRepository")
+ */
+class Story
+{
+    /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $name;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $description;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $storyPoints;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $author;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $contactEmail;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getStoryPoints(): ?int
+    {
+        return $this->storyPoints;
+    }
+
+    public function setStoryPoints(int $storyPoints): self
+    {
+        $this->storyPoints = $storyPoints;
+
+        return $this;
+    }
+
+    public function getAuthor(): ?string
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(string $author): self
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    public function getContactEmail(): ?string
+    {
+        return $this->contactEmail;
+    }
+
+    public function setContactEmail(string $contactEmail): self
+    {
+        $this->contactEmail = $contactEmail;
+
+        return $this;
+    }
+}
 
 <?php
 
 namespace App\Form;
 
+use App\Entity\Story;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class TransactionType extends AbstractType
+class StoryType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('bic')
-            ->add('iban')
+            ->add('name')
+            ->add('description')
+            ->add('storyPoints')
+            ->add('author')
+            ->add('contactEmail')
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            // Configure your form options here
+            'data_class' => Story::class,
         ]);
     }
 }
 
-Appliquez les contraintes identifiées aux éléments du formulaire : ces champs ne peuvent pas non plus être vides.
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Story;
+use App\Form\StoryType;
+use App\Repository\StoryRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+/**
+ * @Route("/story")
+ */
+class StoryController extends AbstractController
+{
+    /**
+     * @Route("/new", name="story_new", methods={"GET","POST"})
+     */
+    public function new(Request $request, ValidatorInterface $validator): Response
+    {
+        $story = new Story();
+
+        $form = $this->createForm(StoryType::class, $story);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            return $this->render('story/show.html.twig', [
+                'story' => $story,
+            ]);
+        }
+
+        return $this->render('story/new.html.twig', [
+            'story' => $story,
+            'form' => $form->createView(),
+        ]);
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>New Story</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <h1>Create new Story</h1>
+    {% form_theme form 'bootstrap_4_layout.html.twig' %}
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn">{{ button_label|default('Save') }}</button>
+    {{ form_end(form) }}
+    {% block javascripts %}{% endblock %}
+</div>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>New Story</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <h1>Story</h1>
+
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Name</th>
+            <td>{{ story.name }}</td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>{{ story.description }}</td>
+        </tr>
+        <tr>
+            <th>StoryPoints</th>
+            <td>{{ story.storyPoints }}</td>
+        </tr>
+        <tr>
+            <th>Author</th>
+            <td>{{ story.author }}</td>
+        </tr>
+        <tr>
+            <th>Contact Email</th>
+            <td>{{ story.contactEmail }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
+
+Vous êtes chargé de valider le contenu de cette entité. Voici les contraintes que vous devez appliquer :
+
+name ne peut être vide et doit faire au moins 10 caractères
+
+description peut être vide, mais ne peut excéder 2000 caractères
+
+author doit être une chaîne de caractères ne contenant que des lettres et des chiffres
+
+contactEmail doit être un e-mail, format HTML5
+
+storyPoint ne peut que correspondre à l'un des 10 premiers nombres de la suite de Fibonacci.
+Cette contrainte pourra être réutilisée et devra donc faire l'objet d'une contrainte personnalisée.
+
+Avant de continuer, faisons un petit rappel sur les expressions régulières. Comme vous pouvez le voir,
+l'entité author demande d'être une chaine de caractère ne contenant que des lettres et des chiffres.
+Nous allons donc être confronté aux Regex…
+
+Pas de panique, la regex, quand il s'agit de vérifier uniquement des chiffres et des
+lettres n'est pas si terrible qu'on ne le pense. Avant toute chose, pour commencer la déclaration d'une Regex,
+elle doit être délimitée par des slash.
+
+Notre Regex se délimite donc par "//". Ensuite, pour indiquer à notre Regex que nous souhaitons
+retrouver une chaine de caractères contenant des lettres en minuscules, nous utiliserons les caractères
+[a-z] ce qui nous donne donc "/[a-z]/" .
+
+Pour finir, nous utiliserons les caractères spéciaux "^" "+" et "$" pour indiquer :
+
+"^" = En début de chaîne
+
+"+" = Signifie une répétition d'au moins 1 fois du sous-modèle qui le précède
+
+"$" = En fin de chaîne
+
+Si vous souhaitez combiner l'ensemble, notre Regex ressemblera à quelque chose comme "/^[a-z]+$/"
+qui correspond à une chaine restreinte à un seul mot non vide en minuscule (sans lettre accentuée).
