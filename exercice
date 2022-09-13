@@ -1,42 +1,127 @@
-Vous disposez de la classe suivante, qui permet de matérialiser un article de blog :
+Le code suivant doit permettre la validation d'un utilisateur et
+d'afficher les erreurs éventuelles dans un template Twig.
+
+<?php
+
+namespace App\Controller;
+
+use App\Entity\User;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+class ValidationController extends AbstractController
+{
+    /**
+     * @Route("/validation")
+     */
+    public function validation(): Response
+    {
+        $user = new User();
+        $user->setUsername('johndoe');
+        $user->setFirstName('John');
+        $user->setLastName('Doe');
+
+        return $this->render('validation.html.twig'));
+    }
+}
 
 <?php
 
 namespace App\Entity;
 
-use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
-class BlogPost
+/**
+ * @ORM\Entity()
+ */
+class User implements UserInterface
 {
     /**
-     * @Assert\Length(min=15)
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
      */
-    private $title;
+    private $id;
 
     /**
-     * @Assert\NotBlank
+     * @ORM\Column(type="string", length=180, unique=true)
      */
-    private $slug;
+    private $username;
 
     /**
-     * @Assert\NotBlank
-     * @Assert\Length(max=2000)
+     * @ORM\Column(type="json")
      */
-    private $abstract;
+    private $roles = [];
 
-    private $author;
+    /**
+     * @var string The hashed password
+     * @ORM\Column(type="string")
+     */
+    private $password;
 
-    private $content;
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $firstName;
 
-    private $category;
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $lastName;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUsername(): string
+    {
+        return (string) $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): self
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
 }
 
-Ajoutez les contraintes suivantes à ces propriétés :
+Modifiez ce code afin de permettre la validation de l'entité User et de retourner
+les erreurs éventuelles au template Twig :
 
-Les propriétés author / category ne peuvent être nulles
+Le validateur doit être injecté dans la fonction
 
-La propriété author doit être au format e-mail html5
-
-La propriété category doit faire partie de la liste suivante : PHP / HTML / JS au moyen d'une constante
-
-La propriété content doit faire au moins 100 caractères, au plus 10 000
+Les erreurs éventuelles doivent être retournées à Twig
