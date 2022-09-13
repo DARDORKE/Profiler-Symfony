@@ -2,27 +2,29 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
+use App\Entity\BlogPost;
+use http\Message;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ValidationController extends AbstractController
 {
     #[Route("/validation")]
-    public function validation(ValidatorInterface $validator): Response
+    public function validation(ValidatorInterface $validator): JsonResponse
     {
-        $user = new User();
-        $user->setUsername('johndoe');
-        $user->setFirstName('John');
-        $user->setLastName('Doe');
+        $blogPost = new BlogPost();
+        $blogPost->setApprovalDate('2020-05-16');
 
-        $errors = $validator->validate($user);
+        $errors = $validator->validate($blogPost);
 
+        $return = [];
 
-        return $this->render('validation/index.html.twig', [
-            'errors' => $errors
-        ]);
+        foreach ($errors as $error) {
+            $return[] = ((string) $error);
+        }
+
+        return new JsonResponse($return);
     }
 }

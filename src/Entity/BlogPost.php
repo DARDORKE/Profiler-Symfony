@@ -2,30 +2,48 @@
 
 namespace App\Entity;
 
+use App\Validator\IsNotWeekend;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class BlogPost
 {
-    public const LANGUAGE = ['PHP', 'HTML', 'JS'];
-
     #[Assert\Length(min: 15)]
     private $title;
 
     #[Assert\NotBlank]
-    private $slug;
+    #[Assert\Date]
+    #[IsNotWeekend]
+    private $approvalDate;
 
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 2000)]
-    private $abstract;
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
-    #[Assert\NotBlank]
-    #[Assert\Email(mode: 'html5')]
-    private $author;
+    /**
+     * @param mixed $title
+     */
+    public function setTitle($title): void
+    {
+        $this->title = $title;
+    }
 
-    #[Assert\Length(min: 100, max: 10000)]
-    private $content;
+    /**
+     * @return mixed
+     */
+    public function getApprovalDate()
+    {
+        return $this->approvalDate;
+    }
 
-    #[Assert\NotBlank]
-    #[Assert\Choice(choices: self::LANGUAGE)]
-    private $category;
+    /**
+     * @param mixed $approvalDate
+     */
+    public function setApprovalDate($approvalDate): void
+    {
+        $this->approvalDate = $approvalDate;
+    }
 }
