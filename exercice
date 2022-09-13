@@ -26,6 +26,4 @@ class TransactionType extends AbstractType
     }
 }
 
-Identifiez les deux contraintes permettant de valider un BIC et un IBAN dans la documentation.
-
-#[Assert\Bic] #[Assert\Iban]
+Appliquez les contraintes identifiées aux éléments du formulaire : ces champs ne peuvent pas non plus être vides.
