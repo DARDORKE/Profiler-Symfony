@@ -1,95 +1,29 @@
-Vous disposez de l'entité suivante, représentant un article de blog.
-
-Pour pouvoir être publié, un article de blog doit être validé.
-On souhaite empêcher la validation de ces articles au cours du week-end.
+Vous disposez du formulaire suivant, permettant d'effectuer une transaction :
 
 <?php
 
-namespace App\Entity;
+namespace App\Form;
 
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class BlogPost
+class TransactionType extends AbstractType
 {
-
-    private $title;
-
-    /**
-     * @Assert\NotBlank()
-     */
-    private $approvalDate;
-
-    /**
-     * @return mixed
-     */
-    public function getTitle()
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        return $this->title;
+        $builder
+            ->add('bic')
+            ->add('iban')
+        ;
     }
 
-    /**
-     * @param mixed $title
-     */
-    public function setTitle($title): void
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $this->title = $title;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getApprovalDate()
-    {
-        return $this->approvalDate;
-    }
-
-    /**
-     * @param mixed $approvalDate
-     */
-    public function setApprovalDate($approvalDate): void
-    {
-        $this->approvalDate = $approvalDate;
+        $resolver->setDefaults([
+            // Configure your form options here
+        ]);
     }
 }
 
-<?php
-
-namespace App\Controller;
-
-use App\Entity\BlogPost;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-
-class ValidationController extends AbstractController
-{
-    /**
-     * @Route("/validation")
-     */
-    public function validation(ValidatorInterface $validator): JsonResponse
-    {
-        $blogPost = new BlogPost();
-        $blogPost->setApprovalDate('2020-05-09');
-
-        $errors = $validator->validate($blogPost);
-
-        $return = [];
-
-        foreach ($errors as $error) {
-            $return[] = ((string) $error);
-        }
-
-        return new JsonResponse($return);
-    }
-}
-
-La fonction suivante permet de vérifier qu'une date donnée correspond ou non à un week-end.
-
-date('N', strtotime('2020-05-08')) >= 6
-
-Mettez en place une contrainte personnalisée isNotWeekend sur la propriété approvalDate permettant de refuser qu'une
-date soit située le week-end.
-
-Vous pouvez tester vos données en modifiant la valeur de $blogPost->setApprovalDate('2020-05-09'); et en
-accédant à l'URL /validation.
+Identifiez les deux contraintes permettant de valider un BIC et un IBAN dans la documentation.
